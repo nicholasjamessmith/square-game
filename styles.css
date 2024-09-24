@@ -1,0 +1,75 @@
+#game-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+body,
+html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  /* Optional background color for clarity */
+}
+
+#squareContainer {
+  display: grid;
+  grid-template-columns: repeat(10, 50px);
+  /* 10 squares per row */
+  grid-template-rows: repeat(10, 50px);
+  /* 10 squares per column */
+  grid-gap: 0;
+  /* No space between squares */
+  width: 500px;
+  /* Exact size to fit 10 squares of 50px */
+  height: 500px;
+  /* Exact size to fit 10 squares of 50px */
+  background-color: white;
+  /*Optional background color for container*/
+  /*border: 2px solid #333;*/
+  /* Optional border for visual appeal */
+  box-sizing: border-box;
+  /* Ensures border doesn't affect size */
+}
+
+/* Small red squares */
+.square {
+  width: 50px;
+  height: 50px;
+  background-color: red;
+  transition: background-color 0.5s;
+}
+
+/* Large red squares */
+.large-square {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  transition: background-color 0.5s;
+  grid-column: span 2;
+  /* Large squares span 2 columns */
+  grid-row: span 2;
+  /* Large squares span 2 rows */
+}
+
+/* Counter display */
+#counter, #count {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Buttons for adding squares */
+#controls {
+  text-align: center;
+  margin-top: 10px;
+}
