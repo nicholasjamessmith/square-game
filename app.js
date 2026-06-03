@@ -1,10 +1,28 @@
-let squareCount = 0;  // Start with 1 red square by default
+let squareCount = 0;
 let largeSquareCount = 0;
 let totalValue = 0;
-let clickCount = 0; // Track number of clicks used to reach mutliple of 10
+let clickCount = 0;
+let gameActive = false;
+let timeLeft = 60;
+let timerInterval = null;
+
+const startButton = document.getElementById('startButton');
+const addSquareButton = document.getElementById('addSquareButton');
+const add3SquaresButton = document.getElementById('add3SquaresButton');
+const add5SquaresButton = document.getElementById('add5SquaresButton');
+const gameButtons = [addSquareButton, add3SquaresButton, add5SquaresButton];
+const modal = document.getElementById('modal');
+const modalBackdrop = document.querySelector('.modal-backdrop');
+const modalClose = document.querySelector('.close');
+const modalScore = document.getElementById('modal-score');
+const modalCount = document.getElementById('modal-count');
+const timerEl = document.getElementById('timer');
+
+function updateTimerDisplay() {
+  timerEl.innerText = `Time: ${timeLeft}`;
+}
 
 function updateCounter() {
-  //const totalValue = squareCount + largeSquareCount * 10;
   document.getElementById('counter').innerText = `Score: ${clickCount}`;
 }
 
@@ -12,86 +30,150 @@ function updateCount() {
   document.getElementById('count').innerText = `Count: ${totalValue}`;
 }
 
-// Function to create and add squares to the container
-function addSquares(numSquares) {
+function setButtonsDisabled(disabled) {
+  gameButtons.forEach((btn) => {
+    btn.disabled = disabled;
+  });
+}
+
+function showModal() {
+  modalScore.innerText = `Score: ${clickCount}`;
+  modalCount.innerText = `Count: ${totalValue}`;
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function hideModal() {
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timeLeft = 60;
+  updateTimerDisplay();
+  gameActive = true;
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }, 1000);
+}
+
+function endGame() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  gameActive = false;
+  setButtonsDisabled(true);
+  showModal();
+}
+
+function resetToIdle() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  gameActive = false;
+  const squareContainer = document.getElementById('squareContainer');
+  squareContainer.innerHTML = '';
+
+  squareCount = 0;
+  largeSquareCount = 0;
+  totalValue = 0;
+  clickCount = 0;
+  timeLeft = 60;
+
+  hideModal();
+  setButtonsDisabled(true);
+  startButton.disabled = false;
+  startButton.style.display = 'inline-block';
+  updateTimerDisplay();
+  updateCounter();
+  updateCount();
+}
+
+function startGame() {
+  startButton.disabled = true;
+  startButton.style.display = 'none';
+  setButtonsDisabled(false);
+  gameActive = true;
+  addSquares(1, true);
+  startTimer();
+}
+
+function addSquares(numSquares, isInitial = false) {
+  if (!gameActive) return;
+
   const squareContainer = document.getElementById('squareContainer');
 
-  clickCount++;
+  if (!isInitial) {
+    clickCount++;
+  }
 
-
-  // Add new squares
   for (let i = 0; i < numSquares; i++) {
     const newSquare = document.createElement('div');
     newSquare.classList.add('square');
     squareContainer.appendChild(newSquare);
   }
 
-  // Update the square count
   squareCount += numSquares;
+  totalValue = squareCount + (largeSquareCount * 10);
 
-  //Total value
-  totalValue = squareCount + (largeSquareCount * 10)
-  
-  //call updateCount function
   updateCount();
-  
-  //call updateCounter function
   updateCounter();
 
-  // Check if the number of squares is an exact multiple of 10
   if (squareCount >= 10 && squareCount % 10 === 0) {
     transformSquares();
   }
 }
 
-// Function to transform small squares into large squares
 function transformSquares() {
   const squareContainer = document.getElementById('squareContainer');
   const squares = document.querySelectorAll('.square');
-  const multiplesOf10 = Math.floor(squareCount / 10);  // Calculate how many sets of 10 squares to transform
+  const multiplesOf10 = Math.floor(squareCount / 10);
 
-  // Turn all small squares green
-  squares.forEach(square => {
+  squares.forEach((square) => {
     square.style.backgroundColor = '#66FF00';
   });
 
-  // Wait for 1 second and then remove the small squares
   setTimeout(() => {
-    // Remove all the small squares
-    squares.forEach(square => {
+    if (!gameActive) return;
+
+    squares.forEach((square) => {
       square.remove();
     });
 
-    // Add one large red square for each multiple of 10
     for (let i = 0; i < multiplesOf10; i++) {
       const largeSquare = document.createElement('div');
       largeSquare.classList.add('large-square');
-      squareContainer.insertBefore(largeSquare, squareContainer.firstChild);  // Add large square at the beginning
+      squareContainer.insertBefore(largeSquare, squareContainer.firstChild);
     }
 
-    // Update the counts to reflect the transformation
-    largeSquareCount += multiplesOf10;  // Increment large squares based on multiples of 10
-    squareCount -= multiplesOf10 * 10;  // Reduce the small square count by the multiples of 10
+    largeSquareCount += multiplesOf10;
+    squareCount -= multiplesOf10 * 10;
+    totalValue = squareCount + (largeSquareCount * 10);
 
-    // Reset click count after reaching a multiple of 10
-    //clickCount = 0;
-
-    // Update the counter display
+    updateCount();
     updateCounter();
   }, 1000);
 }
 
-const modal = document.getElementById("modal");
-if (totalValue == 100) {
-    document.getElementById('modal').innerText = `You won!`;
-}
+modalClose.addEventListener('click', resetToIdle);
+modalBackdrop.addEventListener('click', resetToIdle);
 
-// Add the default square when the game starts
+addSquareButton.addEventListener('click', () => addSquares(1));
+add3SquaresButton.addEventListener('click', () => addSquares(3));
+add5SquaresButton.addEventListener('click', () => addSquares(5));
+
+startButton.addEventListener('click', startGame);
+
 window.onload = () => {
-  addSquares(1);  // Add 1 square by default on load
+  resetToIdle();
 };
-
-// Button event listeners
-document.getElementById('addSquareButton').addEventListener('click', () => addSquares(1));
-document.getElementById('add3SquaresButton').addEventListener('click', () => addSquares(3));
-document.getElementById('add5SquaresButton').addEventListener('click', () => addSquares(5));

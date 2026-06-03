@@ -1,23 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Red Square Game</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Square Game</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <div id="game-container">
-        <div id="count">Count: 0</div>
-        <div id="counter">Score: 1</div>
-        <button id="addSquareButton">+1</button>
-        <button id="add3SquaresButton">+3</button>
-        <button id="add5SquaresButton">+5</button>
-        <div id="squareContainer"></div>
-        <div id="modal">
-          <span class="close"></span>
-        </div>
+  <div id="game-container">
+    <h1>Get the highest count with the lowest score.<br>Hurry.</h1>
+    <button id="startButton">Start</button>
+    <div id="timer">Time: 60</div>
+    <div id="count">Count: 0</div>
+    <div id="counter">Score: 0</div>
+    <button id="addSquareButton" disabled>+1</button>
+    <button id="add3SquaresButton" disabled>+3</button>
+    <button id="add5SquaresButton" disabled>+5</button>
+    <div id="squareContainer"></div>
+  </div>
+  <div id="modal" class="hidden" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <button type="button" class="close" aria-label="Close">&times;</button>
+      <h2>Time's up!</h2>
+      <p id="modal-score"></p>
+      <p id="modal-count"></p>
     </div>
-    <script src="app.js"></script>
+  </div>
+  <script src="app.js"></script>
 </body>
+
 </html>
